@@ -7,7 +7,7 @@
 [![Vue 3](https://img.shields.io/badge/Vue%203-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)](https://vuejs.org/)
 [![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://golang.org/)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/License-GPL%20v3-blue?style=for-the-badge)](LICENSE)
 
 </div>
 
@@ -197,4 +197,6 @@ docker run --rm -v supplier-backend-data:/data -v $(pwd):/backup alpine \
 
 ## 📜 License
 
-MIT License © 2026 JackZeng
+GNU General Public License v3.0 © 2026 JackZeng
+
+本项目采用 GPLv3 许可证，您可以自由使用、修改和分发，但任何衍生作品必须同样采用 GPLv3 许可证并保持开源。

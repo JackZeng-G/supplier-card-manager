@@ -23,3 +23,6 @@ npm-debug.log*
 
 # Claude worktrees
 .claude/
+
+# 名片范例（包含真实个人信息）
+名片范例/

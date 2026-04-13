@@ -1,0 +1,56 @@
+# Node
+**/node_modules/
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+
+# 构建输出
+**/dist/
+frontend/dist/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+.claude/
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 本地数据
+backend/data/
+backend/uploads/
+backend/images/
+**/*.db
+**/*.db-shm
+**/*.db-wal
+
+# 环境变量
+**/.env
+**/.env.local
+**/.env.*.local
+
+# 日志
+**/*.log
+
+# 临时文件
+**/*.tmp
+**/*.swp
+**/*.swo
+*~
+
+# 文档
+*.md
+!README.md
+
+# 构建脚本（不需要在镜像中）
+build.sh
+build.bat
+start-docker.sh
+start-docker.bat
+stop-docker.sh
+stop-docker.bat
+
+# 名片范例
+名片范例/

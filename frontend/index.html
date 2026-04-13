@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>frontend</title>
+    <style>
+      /* 全局下拉框样式 - 针对Element Plus和原生select */
+      .el-select-dropdown {
+        background-color: #1e3a5f !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      }
+      .el-select-dropdown__item {
+        color: #f0f4f8 !important;
+        background-color: transparent !important;
+      }
+      .el-select-dropdown__item:hover {
+        background-color: #2d5a87 !important;
+      }
+      .el-select-dropdown__item.selected {
+        color: #14b8a6 !important;
+        font-weight: 600;
+      }
+      /* 修复popper背景 */
+      .el-popper {
+        background-color: #1e3a5f !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      }
+      .el-popper .el-popper__arrow::before {
+        background-color: #1e3a5f !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+      }
+      /* 原生select样式 */
+      select {
+        background-color: rgba(255, 255, 255, 0.03) !important;
+        color: #f0f4f8 !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      }
+      select option {
+        background-color: #1e3a5f !important;
+        color: #f0f4f8 !important;
+      }
+      select option:hover,
+      select option:focus,
+      select option:checked {
+        background-color: #2d5a87 !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

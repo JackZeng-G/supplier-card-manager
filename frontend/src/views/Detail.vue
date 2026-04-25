@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import {
@@ -39,6 +39,13 @@ const form = reactive({
   card_image_back: ''
 })
 
+const transportTypeArray = ref([])
+
+// 同步 transportTypeArray <-> form.transport_type
+watch(transportTypeArray, (val) => {
+  form.transport_type = val.join(',')
+})
+
 const pageTitle = computed(() => {
   if (isNew.value) return '新增供应商'
   if (isReadOnly.value) return '查看供应商'
@@ -52,6 +59,7 @@ const fetchSupplier = async () => {
   try {
     const response = await supplierApi.getOne(route.params.id)
     Object.assign(form, response.data)
+    transportTypeArray.value = form.transport_type ? form.transport_type.split(',') : []
   } catch (error) {
     ElMessage.error('获取详情失败: ' + (error.response?.data?.error || error.message))
     router.push('/list')
@@ -279,11 +287,18 @@ onMounted(() => {
             <div class="field-grid">
               <div class="field-item">
                 <label>运输方式</label>
-                <div class="field-value" v-if="isReadOnly">{{ form.transport_type || '-' }}</div>
-                <el-select v-else v-model="form.transport_type" placeholder="请选择" style="width: 100%">
-                  <el-option label="空运" value="空" />
-                  <el-option label="海运" value="海" />
-                  <el-option label="空运+海运" value="空/海" />
+                <div class="field-value" v-if="isReadOnly">
+                  <div class="transport-tags" v-if="form.transport_type">
+                    <span class="transport-tag" v-for="t in form.transport_type.split(',')" :key="t">{{ t }}</span>
+                  </div>
+                  <span v-else>-</span>
+                </div>
+                <el-select v-else v-model="transportTypeArray" multiple placeholder="请选择" style="width: 100%">
+                  <el-option label="空运" value="空运" />
+                  <el-option label="海运" value="海运" />
+                  <el-option label="卡车" value="卡车" />
+                  <el-option label="铁路" value="铁路" />
+                  <el-option label="多式联运" value="多式联运" />
                 </el-select>
               </div>
               <div class="field-item">
@@ -658,6 +673,23 @@ onMounted(() => {
 
 .link:hover {
   color: var(--surface);
+}
+
+.transport-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.transport-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(20, 184, 166, 0.15);
+  color: var(--teal);
+  border: 1px solid rgba(20, 184, 166, 0.25);
 }
 
 /* 状态标签 */

@@ -17,7 +17,7 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const searchKeyword = ref('')
 const filterStatus = ref('')
-const filterTransportType = ref('')
+const filterTransportType = ref([])
 
 // 统计数据
 const stats = ref({
@@ -36,7 +36,7 @@ const fetchSuppliers = async () => {
       page_size: pageSize.value,
       search: searchKeyword.value,
       status: filterStatus.value,
-      transport_type: filterTransportType.value
+      transport_type: filterTransportType.value.join(',')
     })
     tableData.value = response.data.list || []
     total.value = response.data.total || 0
@@ -188,10 +188,12 @@ onMounted(() => {
               <el-option label="待开发" value="待开发" />
               <el-option label="已暂停" value="已暂停" />
             </el-select>
-            <el-select v-model="filterTransportType" placeholder="运输方式" clearable @change="handleSearch">
-              <el-option label="空运" value="空" />
-              <el-option label="海运" value="海" />
-              <el-option label="空运+海运" value="空/海" />
+            <el-select v-model="filterTransportType" placeholder="运输方式" clearable multiple @change="handleSearch">
+              <el-option label="空运" value="空运" />
+              <el-option label="海运" value="海运" />
+              <el-option label="卡车" value="卡车" />
+              <el-option label="铁路" value="铁路" />
+              <el-option label="多式联运" value="多式联运" />
             </el-select>
           </div>
         </div>
@@ -226,7 +228,8 @@ onMounted(() => {
               <th class="col-company">公司名称</th>
               <th class="col-contact">联系人</th>
               <th class="col-phone">电话</th>
-              <th class="col-email">邮箱</th>
+              <th class="col-products">特色产品</th>
+              <th class="col-transport">运输方式</th>
               <th class="col-routes">优势航线</th>
               <th class="col-status" style="text-align: center;">状态</th>
               <th class="col-actions" style="text-align: center;">操作</th>
@@ -262,8 +265,14 @@ onMounted(() => {
                 </div>
               </td>
               <td class="col-phone" data-label="电话">{{ row.phone || '-' }}</td>
-              <td class="col-email" data-label="邮箱">{{ row.email || '-' }}</td>
-              <td class="col-routes" data-label="航线">{{ row.routes || '-' }}</td>
+              <td class="col-products" data-label="特色产品" :title="row.products">{{ row.products || '-' }}</td>
+              <td class="col-transport" data-label="运输方式">
+                <div class="transport-tags" v-if="row.transport_type">
+                  <span class="transport-tag" v-for="t in row.transport_type.split(',')" :key="t">{{ t }}</span>
+                </div>
+                <span v-else>-</span>
+              </td>
+              <td class="col-routes" data-label="航线" :title="row.routes">{{ row.routes || '-' }}</td>
               <td class="col-status" data-label="状态">
                 <span :class="['status-tag', getStatusClass(row.status)]">
                   {{ row.status || '待定' }}
@@ -460,7 +469,7 @@ onMounted(() => {
 }
 
 .filter-group :deep(.el-select) {
-  width: 130px;
+  width: 160px;
 }
 
 .filter-group :deep(.el-select .el-select__wrapper) {
@@ -696,7 +705,8 @@ onMounted(() => {
 .col-company,
 .col-contact,
 .col-phone,
-.col-email,
+.col-products,
+.col-transport,
 .col-routes,
 .col-status,
 .col-actions {
@@ -722,9 +732,41 @@ onMounted(() => {
   color: var(--text-mist);
 }
 
-.col-email {
-  min-width: 180px;
+.col-products {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-mist);
+}
+
+.col-transport {
+  min-width: 100px;
+}
+
+.transport-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.transport-tag {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(20, 184, 166, 0.15);
   color: var(--teal);
+  border: 1px solid rgba(20, 184, 166, 0.25);
+  white-space: nowrap;
+}
+
+.col-routes {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .col-routes {
@@ -1026,7 +1068,8 @@ onMounted(() => {
   .col-company,
   .col-contact,
   .col-phone,
-  .col-email,
+  .col-products,
+  .col-transport,
   .col-routes,
   .col-status,
   .col-actions {

@@ -19,7 +19,7 @@ type Supplier struct {
 	Website       string    `json:"website" gorm:"size:200"`                          // 网站
 	NvoccNo       string    `json:"nvocc_no" gorm:"size:50"`                          // NVOCC编号
 	StaffSize     string    `json:"staff_size" gorm:"size:50"`                        // 人员规模
-	TransportType string    `json:"transport_type" gorm:"size:20"`                    // 空/海
+	TransportType string    `json:"transport_type" gorm:"size:200"`                    // 运输方式(多选逗号分隔)
 	Routes        string    `json:"routes" gorm:"size:200"`                           // 优势航线
 	ShippingLine  string    `json:"shipping_line" gorm:"size:200"`                    // 船司关系
 	Products      string    `json:"products" gorm:"size:500"`                         // 特色产品

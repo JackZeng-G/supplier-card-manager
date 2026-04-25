@@ -34,6 +34,23 @@ func InitDB() error {
 		return err
 	}
 
+	// 迁移旧运输方式数据: 空→空运, 海→海运, 空/海→空运,海运
+	migrateTransportType()
+
 	log.Println("数据库初始化成功")
 	return nil
+}
+
+func migrateTransportType() {
+	migrations := map[string]string{
+		"空/海": "空运,海运",
+		"空":   "空运",
+		"海":   "海运",
+	}
+	for old, new := range migrations {
+		result := DB.Model(&Supplier{}).Where("transport_type = ?", old).Update("transport_type", new)
+		if result.RowsAffected > 0 {
+			log.Printf("迁移运输方式: %q → %q (%d条)", old, new, result.RowsAffected)
+		}
+	}
 }

@@ -434,10 +434,17 @@ func GetSuppliers(c *gin.Context) {
 		query = query.Where("status = ?", status)
 	}
 
-	// 运输方式筛选
-	if transportType != "" {
-		query = query.Where("transport_type = ?", transportType)
-	}
+		// 运输方式筛选（支持逗号分隔的多选匹配，任一匹配即返回）
+		if transportType != "" {
+			types := strings.Split(transportType, ",")
+			conditions := make([]string, 0, len(types))
+			args := make([]interface{}, 0, len(types))
+			for _, t := range types {
+				conditions = append(conditions, "transport_type LIKE ?")
+				args = append(args, "%"+strings.TrimSpace(t)+"%")
+			}
+			query = query.Where(strings.Join(conditions, " OR "), args...)
+		}
 
 	query.Count(&total)
 	query.Offset((page - 1) * pageSize).Limit(pageSize).Order("created_at DESC").Find(&suppliers)

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import {
@@ -42,6 +42,12 @@ const form = reactive({
   remark: '',
   status: '',
   card_image_back: ''
+})
+
+const transportTypeArray = ref([])
+
+watch(transportTypeArray, (val) => {
+  form.transport_type = val.join(',')
 })
 
 const handleBeforeUpload = (file) => {
@@ -149,6 +155,7 @@ const resetForm = () => {
   ocrResult.value = null
   ocrResultBack.value = null
   activeStep.value = 0
+  transportTypeArray.value = []
 }
 </script>
 
@@ -396,12 +403,13 @@ const resetForm = () => {
             <div class="form-grid">
               <div class="form-item">
                 <label>运输方式</label>
-                <select v-model="form.transport_type">
-                  <option value="">请选择</option>
-                  <option value="空">空运</option>
-                  <option value="海">海运</option>
-                  <option value="空/海">空运+海运</option>
-                </select>
+                <el-select v-model="transportTypeArray" multiple placeholder="请选择" style="width: 100%">
+                  <el-option label="空运" value="空运" />
+                  <el-option label="海运" value="海运" />
+                  <el-option label="卡车" value="卡车" />
+                  <el-option label="铁路" value="铁路" />
+                  <el-option label="多式联运" value="多式联运" />
+                </el-select>
               </div>
               <div class="form-item">
                 <label>合作状态</label>

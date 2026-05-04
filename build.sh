@@ -20,16 +20,16 @@ cp -r frontend/dist backend/frontend/
 
 # 3. 编译后端
 echo "[3/3] 编译后端..."
-mkdir -p dist
+mkdir -p build
 cd backend
-GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ../dist/supplier-card-manager .
+GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ../build/supplier-card-manager .
 cd ..
 
 echo
 echo "=================================="
 echo "  构建完成！"
 echo "=================================="
-echo "  产物: dist/supplier-card-manager"
+echo "  产物: build/supplier-card-manager"
 echo
-echo "运行: cd backend && ../dist/supplier-card-manager"
+echo "运行: ./build/supplier-card-manager"
 echo

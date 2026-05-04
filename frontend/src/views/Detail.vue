@@ -4,7 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import {
   User, OfficeBuilding, Ship, Tickets, Edit, ArrowLeft,
-  Phone, Message, Location, Link
+  Phone, Message
 } from '@element-plus/icons-vue'
 import { supplierApi } from '../api/supplier'
 

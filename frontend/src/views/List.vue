@@ -237,7 +237,7 @@ onMounted(() => {
           </thead>
           <tbody>
             <tr v-if="!loading && tableData.length === 0">
-              <td colspan="8" class="empty-state">
+              <td colspan="9" class="empty-state">
                 <div class="empty-content">
                   <el-icon class="empty-icon"><OfficeBuilding /></el-icon>
                   <p>暂无供应商数据</p>

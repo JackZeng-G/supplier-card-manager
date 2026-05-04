@@ -15,49 +15,78 @@ import (
 // 预编译正则表达式（避免每次请求重复编译）
 var (
 	// 手机号
-	reMobilePhone    = regexp.MustCompile(`1[3-9]\d{9}`)
+	reMobilePhone         = regexp.MustCompile(`1[3-9]\d{9}`)
 	reMobilePhoneAnchored = regexp.MustCompile(`^1[3-9]\d{9}$`)
 	// 邮箱
 	reEmail = regexp.MustCompile(`[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}`)
 	// URL
 	reHTTPURL = regexp.MustCompile(`https?://[^\s]+`)
 	reWWWURL  = regexp.MustCompile(`www\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(?:\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+`)
-	reDomain  = regexp.MustCompile(`[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(?:\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62}){1,3}`)
-	// 中文姓名
-	reChineseName   = regexp.MustCompile(`^[\x{4e00}-\x{9fa5}]{2,4}$`)
-	reChineseChars  = regexp.MustCompile(`[\x{4e00}-\x{9fa5}]`)
-	reChineseWord   = regexp.MustCompile(`[\x{4e00}-\x{9fa5}]+`)
-	reChineseOnly   = regexp.MustCompile(`^[\x{4e00}-\x{9fa5}]+$`)
-	// 英文相关
-	reEnglishOnly   = regexp.MustCompile(`^[A-Za-z\s]+$`)
-	reEnglishNameCN = regexp.MustCompile(`^([A-Za-z]+)\s+([\x{4e00}-\x{9fa5}]{2,4})$`)
-	// 数字提取
+	// 中文
+	reChineseName = regexp.MustCompile(`^[\x{4e00}-\x{9fa5}]{2,4}$`)
+	reChineseWord = regexp.MustCompile(`[\x{4e00}-\x{9fa5}]+`)
+	reChineseOnly = regexp.MustCompile(`^[\x{4e00}-\x{9fa5}]+$`)
+	// 数字
 	reDigits = regexp.MustCompile(`\d`)
 	// QQ
-	reQQ      = regexp.MustCompile(`QQ[:：]?\s*(\d{5,12}(?:[/\d]+)?)`)
-	reQQAlt   = regexp.MustCompile(`(?:QQ|qq)[:：]?\s*(\d{5,12})`)
-	reQQBack  = regexp.MustCompile(`QQ[:：\s]*([1-9]\d{4,12})`)
+	reQQ     = regexp.MustCompile(`QQ[:：]?\s*(\d{5,12}(?:[/\d]+)?)`)
+	reQQBack = regexp.MustCompile(`QQ[:：\s]*([1-9]\d{4,12})`)
 	// 微信
-	reWechat      = regexp.MustCompile(`(?:微信|WeChat|WECHAT)[:：]?\s*(\S+)`)
-	reWechatBack  = regexp.MustCompile(`(微信|wechat|WeChat)[:：\s]*([a-zA-Z0-9_-]+)`)
+	reWechatBack = regexp.MustCompile(`(微信|wechat|WeChat)[:：\s]*([a-zA-Z0-9_-]+)`)
 	// 航线
-	reRoutes        = regexp.MustCompile(`(?:优势)?航线[:：]?\s*(.+)`)
-	reRoutesLabel   = regexp.MustCompile(`^(优势)?航线[:：]?\s*`)
-	reRoutesAlt     = regexp.MustCompile(`(?:优势)?航线[:：]?\s*(.*)`)
+	reRoutes      = regexp.MustCompile(`(?:优势)?航线[:：]?\s*(.+)`)
+	reRoutesLabel = regexp.MustCompile(`^(优势)?航线[:：]?\s*`)
 	// 船公司
-	reShipping      = regexp.MustCompile(`(?:合作|代理)船公司?[:：]?\s*(.+)`)
-	reShippingAlt   = regexp.MustCompile(`船公司?[:：]?\s*(.+)`)
+	reShipping    = regexp.MustCompile(`(?:合作|代理)船公司?[:：]?\s*(.+)`)
+	reShippingAlt = regexp.MustCompile(`船公司?[:：]?\s*(.+)`)
 	// 特色产品
-	reProducts      = regexp.MustCompile(`(?:特色产品|主营|服务项目)[:：]?\s*(.+)`)
+	reProducts = regexp.MustCompile(`(?:特色产品|主营|服务项目)[:：]?\s*(.+)`)
 	// 地址
 	reAddressPrefix = regexp.MustCompile(`^地\s*址\s*[:：]?\s*`)
-	reAddress       = regexp.MustCompile(`(?:地址|Address|ADD)[:：]?\s*(.+)`)
 	// NVOCC
-	reNvoccFull  = regexp.MustCompile(`NVOCC\s*(?:NO|No)?[:\.：]?\s*([A-Z0-9\-]+)`)
-	reNvoccMOC   = regexp.MustCompile(`MOC\-NV\s*(\d+)`)
+	reNvoccFull   = regexp.MustCompile(`NVOCC\s*(?:NO|No)?[:\.：]?\s*([A-Z0-9\-]+)`)
+	reNvoccMOC    = regexp.MustCompile(`MOC\-NV\s*(\d+)`)
 	reNvoccDigits = regexp.MustCompile(`(\d{12})`)
-	reNvoccGeneric = regexp.MustCompile(`(?:NVOCC|MOC)[\s\-]*([A-Z0-9\-]+)`)
+
+	// 背面识别 - 预编译正则组
+	backRoutesPatterns = []*regexp.Regexp{
+		regexp.MustCompile(`优势航线[:：]?\s*(.*)`),
+		regexp.MustCompile(`航线[:：]?\s*(.*)`),
+		regexp.MustCompile(`优势[:：]?\s*(.*)`),
+	}
+	backShippingPatterns = []*regexp.Regexp{
+		regexp.MustCompile(`船公司?[:：]?\s*(.*)`),
+		regexp.MustCompile(`船司[:：]?\s*(.*)`),
+		regexp.MustCompile(`航司[:：]?\s*(.*)`),
+		regexp.MustCompile(`船东[:：]?\s*(.*)`),
+		regexp.MustCompile(`航线?船东?[:：]?\s*(.*)`),
+		regexp.MustCompile(`合作船公司?[:：]?\s*(.*)`),
+		regexp.MustCompile(`代理船公司?[:：]?\s*(.*)`),
+	}
+	backProductsPatterns = []*regexp.Regexp{
+		regexp.MustCompile(`特色产品[:：]?\s*(.*)`),
+		regexp.MustCompile(`特色[:：]?\s*(.*)`),
+		regexp.MustCompile(`主营[:：]?\s*(.*)`),
+		regexp.MustCompile(`优势产品[:：]?\s*(.*)`),
+		regexp.MustCompile(`服务项目[:：]?\s*(.*)`),
+		regexp.MustCompile(`经营范围[:：]?\s*(.*)`),
+	}
+	reShippingPrefix = regexp.MustCompile(`^(船公司?|船司|航司|合作船公司?)[:：]?\s*`)
+	reShipCompany    = regexp.MustCompile(`船司[:：]?\s*(.+)`)
+	reAirCompany     = regexp.MustCompile(`航司[:：]?\s*(.+)`)
+	reNvoccBack      = regexp.MustCompile(`NVOCC\s*(?:NO|No)?[:\.：]?\s*([A-Z0-9\-]+)|MOC\-NV\s*(\d+)`)
 )
+
+// newOCRClient 创建腾讯云OCR客户端
+func newOCRClient() (*ocr.Client, error) {
+	credential := common.NewCredential(
+		config.AppConfig.TencentSecretID,
+		config.AppConfig.TencentSecretKey,
+	)
+	cpf := profile.NewClientProfile()
+	cpf.HttpProfile.Endpoint = "ocr.tencentcloudapi.com"
+	return ocr.NewClient(credential, config.AppConfig.TencentRegion, cpf)
+}
 
 type OCRResult struct {
 	CompanyName   string `json:"company_name"`
@@ -88,14 +117,7 @@ func RecognizeCard(imageData []byte) (*OCRResult, error) {
 	}
 
 	// 创建腾讯云OCR客户端
-	credential := common.NewCredential(
-		config.AppConfig.TencentSecretID,
-		config.AppConfig.TencentSecretKey,
-	)
-	cpf := profile.NewClientProfile()
-	cpf.HttpProfile.Endpoint = "ocr.tencentcloudapi.com"
-
-	client, err := ocr.NewClient(credential, "ap-guangzhou", cpf)
+	client, err := newOCRClient()
 	if err != nil {
 		return nil, fmt.Errorf("创建OCR客户端失败: %v", err)
 	}
@@ -265,14 +287,7 @@ func recognizeGeneralTextOnly(imageData []byte) ([]string, error) {
 		return nil, fmt.Errorf("未配置腾讯云密钥")
 	}
 
-	credential := common.NewCredential(
-		config.AppConfig.TencentSecretID,
-		config.AppConfig.TencentSecretKey,
-	)
-	cpf := profile.NewClientProfile()
-	cpf.HttpProfile.Endpoint = "ocr.tencentcloudapi.com"
-
-	client, err := ocr.NewClient(credential, "ap-guangzhou", cpf)
+	client, err := newOCRClient()
 	if err != nil {
 		return nil, err
 	}
@@ -442,7 +457,7 @@ func extractFieldsFromGeneralOCR(lines []string, result *OCRResult) *OCRResult {
 			for _, kw := range shippingKeywords {
 				if strings.Contains(lineUpper, strings.ToUpper(kw)) || strings.Contains(line, kw) {
 					// 清理前缀
-					cleanLine := regexp.MustCompile(`^(船公司?|船司|航司|合作船公司?)[:：]?\s*`).ReplaceAllString(line, "")
+					cleanLine := reShippingPrefix.ReplaceAllString(line, "")
 					if cleanLine != "" {
 						result.ShippingLine = cleanLine
 					} else {
@@ -619,14 +634,7 @@ func RecognizeGeneralText(imageData []byte) (*OCRResult, error) {
 	}
 
 	// 创建腾讯云OCR客户端
-	credential := common.NewCredential(
-		config.AppConfig.TencentSecretID,
-		config.AppConfig.TencentSecretKey,
-	)
-	cpf := profile.NewClientProfile()
-	cpf.HttpProfile.Endpoint = "ocr.tencentcloudapi.com"
-
-	client, err := ocr.NewClient(credential, "ap-guangzhou", cpf)
+	client, err := newOCRClient()
 	if err != nil {
 		return nil, fmt.Errorf("创建OCR客户端失败: %v", err)
 	}
@@ -681,14 +689,7 @@ func parseBackCardText(result *OCRResult, lines []string, rawText string) *OCRRe
 		// 1. 提取优势航线 (Routes)
 		// 检查是否包含航线标题
 		if strings.Contains(line, "航线") || strings.Contains(line, "优势") {
-			// 尝试多种匹配模式
-			routesPatterns := []string{
-				`优势航线[:：]?\s*(.*)`,
-				`航线[:：]?\s*(.*)`,
-				`优势[:：]?\s*(.*)`,
-			}
-			for _, pattern := range routesPatterns {
-				routesRegex := regexp.MustCompile(pattern)
+			for _, routesRegex := range backRoutesPatterns {
 				if match := routesRegex.FindStringSubmatch(line); len(match) > 1 {
 					routeContent := strings.TrimSpace(match[1])
 					// 如果当前行有内容，直接使用
@@ -722,17 +723,7 @@ func parseBackCardText(result *OCRResult, lines []string, rawText string) *OCRRe
 
 		// 2. 提取船司关系/航司关系 (ShippingLine)
 		if strings.Contains(line, "船") || strings.Contains(line, "航司") || strings.Contains(line, "船东") {
-			shippingPatterns := []string{
-				`船公司?[:：]?\s*(.*)`,
-				`船司[:：]?\s*(.*)`,
-				`航司[:：]?\s*(.*)`,
-				`船东[:：]?\s*(.*)`,
-				`航线?船东?[:：]?\s*(.*)`,
-				`合作船公司?[:：]?\s*(.*)`,
-				`代理船公司?[:：]?\s*(.*)`,
-			}
-			for _, pattern := range shippingPatterns {
-				shippingRegex := regexp.MustCompile(pattern)
+			for _, shippingRegex := range backShippingPatterns {
 				if match := shippingRegex.FindStringSubmatch(line); len(match) > 1 && result.ShippingLine == "" {
 					shippingContent := strings.TrimSpace(match[1])
 					// 如果当前行有内容
@@ -765,16 +756,7 @@ func parseBackCardText(result *OCRResult, lines []string, rawText string) *OCRRe
 
 		// 3. 提取特色产品/主营 (Products)
 		if strings.Contains(line, "产品") || strings.Contains(line, "主营") || strings.Contains(line, "特色") {
-			productsPatterns := []string{
-				`特色产品[:：]?\s*(.*)`,
-				`特色[:：]?\s*(.*)`,
-				`主营[:：]?\s*(.*)`,
-				`优势产品[:：]?\s*(.*)`,
-				`服务项目[:：]?\s*(.*)`,
-				`经营范围[:：]?\s*(.*)`,
-			}
-			for _, pattern := range productsPatterns {
-				productsRegex := regexp.MustCompile(pattern)
+			for _, productsRegex := range backProductsPatterns {
 				if match := productsRegex.FindStringSubmatch(line); len(match) > 1 && result.Products == "" {
 					productContent := strings.TrimSpace(match[1])
 					// 如果当前行有内容
@@ -870,8 +852,7 @@ func parseBackCardText(result *OCRResult, lines []string, rawText string) *OCRRe
 	if result.NvoccNo == "" {
 		upperText := strings.ToUpper(fullText)
 		if strings.Contains(upperText, "NVOCC") || strings.Contains(upperText, "MOC") {
-			nvoccRegex := regexp.MustCompile(`NVOCC\s*(?:NO|No)?[:\.：]?\s*([A-Z0-9\-]+)|MOC\-NV\s*(\d+)`)
-			if match := nvoccRegex.FindStringSubmatch(fullText); len(match) > 1 {
+			if match := reNvoccBack.FindStringSubmatch(fullText); len(match) > 1 {
 				if match[1] != "" {
 					result.NvoccNo = match[1]
 				} else if match[2] != "" {
@@ -1124,8 +1105,8 @@ func postProcessCardResult(result *OCRResult, lines []string, rawText string) *O
 		// 先尝试正则匹配
 		shippingPatterns := []*regexp.Regexp{
 			reShippingAlt,
-			regexp.MustCompile(`船司[:：]?\s*(.+)`),
-			regexp.MustCompile(`航司[:：]?\s*(.+)`),
+			reShipCompany,
+			reAirCompany,
 			reShipping,
 		}
 		for _, pattern := range shippingPatterns {

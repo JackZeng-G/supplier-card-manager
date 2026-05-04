@@ -2,7 +2,7 @@
 node_modules/
 
 # Build output
-dist/
+build/
 frontend/dist/
 
 # IDE
@@ -32,3 +32,4 @@ backend/data/
 
 # 名片范例（包含真实个人信息）
 名片范例/
+backend/frontend/

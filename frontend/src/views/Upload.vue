@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import {
   Upload as UploadIcon, User, OfficeBuilding, Ship, Tickets,
-  DocumentChecked, Check, Loading
+  DocumentChecked, Check
 } from '@element-plus/icons-vue'
 import { supplierApi } from '../api/supplier'
 

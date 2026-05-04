@@ -52,10 +52,10 @@ func main() {
 	config.InitConfig()
 
 	// 创建数据目录（包含子目录）
-	if err := os.MkdirAll("./data/uploads", 0755); err != nil {
+	if err := os.MkdirAll(config.AppConfig.TempUploadPath, 0755); err != nil {
 		log.Fatalf("创建临时上传目录失败: %v", err)
 	}
-	if err := os.MkdirAll("./data/images", 0755); err != nil {
+	if err := os.MkdirAll(config.AppConfig.ImagePath, 0755); err != nil {
 		log.Fatalf("创建图片存储目录失败: %v", err)
 	}
 

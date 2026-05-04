@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"image"
 	"image/jpeg"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -109,9 +108,4 @@ func (p *ImageProcessor) SaveProcessedImage(imageData []byte, savePath string) e
 	}
 
 	return os.WriteFile(savePath, imageData, 0644)
-}
-
-// ReadImage 读取图片文件
-func ReadImage(r io.Reader) ([]byte, error) {
-	return io.ReadAll(r)
 }

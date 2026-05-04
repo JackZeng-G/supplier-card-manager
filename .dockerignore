@@ -45,6 +45,9 @@ build.bat
 start-docker.sh
 start-docker.bat
 
+# 构建产物（镜像内只复制需要的二进制）
+build/
+
 # 名片范例
 名片范例/
 

@@ -20,17 +20,17 @@ xcopy /E /I /Y "frontend\dist" "backend\frontend\dist"
 
 REM 3. 编译后端
 echo [3/3] 编译后端...
-if not exist "dist" mkdir dist
+if not exist "build" mkdir build
 cd backend
-go build -ldflags="-s -w" -o ..\dist\supplier-card-manager.exe .
+go build -ldflags="-s -w" -o ..\build\supplier-card-manager.exe .
 cd ..
 
 echo.
 echo ==================================
 echo   构建完成！
 echo ==================================
-echo   产物: dist\supplier-card-manager.exe
+echo   产物: build\supplier-card-manager.exe
 echo.
-echo 运行: cd backend ^&^& ..\dist\supplier-card-manager.exe
+echo 运行: build\supplier-card-manager.exe
 echo.
 pause

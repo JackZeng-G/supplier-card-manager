@@ -12,6 +12,7 @@ type Config struct {
 	ImagePath        string // 永久图片存储目录
 	TencentSecretID  string
 	TencentSecretKey string
+	TencentRegion    string
 }
 
 var AppConfig *Config
@@ -31,6 +32,7 @@ func InitConfig() {
 		ImagePath:        getEnv("IMAGE_PATH", "./data/images"),
 		TencentSecretID:  secretID,
 		TencentSecretKey: secretKey,
+		TencentRegion:    getEnv("TENCENT_REGION", "ap-guangzhou"),
 	}
 }
 

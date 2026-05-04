@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: backend/Dockerfile
+      dockerfile: Dockerfile
     container_name: supplier-system
     restart: unless-stopped
     ports:

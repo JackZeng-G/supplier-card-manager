@@ -3,10 +3,13 @@ node_modules/
 
 # Build output
 dist/
+frontend/dist/
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # OS files
 .DS_Store
@@ -20,6 +23,9 @@ npm-debug.log*
 .env
 .env.local
 .env.*.local
+
+# Runtime data
+backend/data/
 
 # Claude worktrees
 .claude/

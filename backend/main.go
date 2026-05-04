@@ -63,7 +63,6 @@ func main() {
 	if err := models.InitDB(); err != nil {
 		log.Fatalf("初始化数据库失败: %v", err)
 	}
-	log.Println("数据库初始化成功")
 
 	// 创建Gin引擎
 	r := gin.Default()
@@ -71,8 +70,8 @@ func main() {
 	// 使用CORS中间件
 	r.Use(middleware.CORS())
 
-    // 使用Gzip压缩中间件
-    r.Use(middleware.GzipMiddleware())
+	// 使用Gzip压缩中间件
+	r.Use(middleware.GzipMiddleware())
 
 	// 静态文件服务（带路径安全验证）
 	log.Printf("临时上传目录: %s", config.AppConfig.TempUploadPath)
@@ -92,11 +91,32 @@ func main() {
 		api.PUT("/suppliers/:id", handlers.UpdateSupplier)
 		api.DELETE("/suppliers/:id", handlers.DeleteSupplier)
 		api.GET("/suppliers/stats", handlers.GetSupplierStats)
-			api.GET("/suppliers/export", handlers.ExportSuppliers)
+		api.GET("/suppliers/export", handlers.ExportSuppliers)
 	}
 
-	// 健康检查
+	// 健康检查（含数据库连接检测，异常日志3次、恢复1次）
+	healthState := &struct {
+		failCount int
+		isDown    bool
+	}{}
 	r.GET("/health", func(c *gin.Context) {
+		sqlDB, err := models.DB.DB()
+		if err != nil || sqlDB.Ping() != nil {
+			healthState.failCount++
+			if healthState.failCount <= 3 {
+				log.Printf("[HEALTH] 数据库连接异常 (第%d次)", healthState.failCount)
+			}
+			healthState.isDown = true
+			c.JSON(503, gin.H{"status": "error", "message": "数据库连接失败"})
+			return
+		}
+		if healthState.isDown {
+			log.Printf("[HEALTH] 数据库连接已恢复 (之前连续失败%d次)", healthState.failCount)
+			healthState.failCount = 0
+			healthState.isDown = false
+		} else {
+			healthState.failCount = 0
+		}
 		c.JSON(200, gin.H{"status": "ok"})
 	})
 

@@ -9,8 +9,8 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositorie
 
 WORKDIR /app
 
-# 复制预编译的二进制文件（本地交叉编译生成）
-COPY backend/main ./main
+# 复制预编译的二进制文件（从 dist/ 目录）
+COPY dist/supplier-card-manager ./main
 RUN chmod +x ./main
 
 # 创建必要的目录

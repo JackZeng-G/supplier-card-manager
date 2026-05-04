@@ -22,12 +22,16 @@ import (
 	"gorm.io/gorm"
 )
 
-// allowedMimeTypes 允许的图片MIME类型
-var allowedMimeTypes = map[string]bool{
-	"image/jpeg": true,
-	"image/png":  true,
-	"image/jpg":  true,
-}
+// 预编译正则表达式（避免每次请求重复编译）
+var (
+	rePhone = regexp.MustCompile(`^[\d\s\-\(\)\+]{7,20}$`)
+	reEmail = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
+
+	allowedMimeTypes = map[string]bool{
+		"image/jpeg": true,
+		"image/png":  true,
+	}
+)
 
 // validateImageMimeType 验证图片的实际MIME类型
 func validateImageMimeType(data []byte) (string, bool) {
@@ -187,29 +191,18 @@ func renameImageIfNeeded(oldFilename string, newCompany string, newContact strin
 func validateSupplier(supplier models.Supplier) map[string]string {
 	errors := make(map[string]string)
 
-	// 验证公司名称或联系人至少有一个（不强制都填）
 	if strings.TrimSpace(supplier.CompanyName) == "" && strings.TrimSpace(supplier.Contact) == "" {
 		errors["company_name"] = "公司名称和联系人至少填写一个"
 	}
 
-	// 验证电话格式（支持手机、座机、国际号码）
-	if supplier.Phone != "" {
-		// 更宽松的电话格式验证：支持手机、座机、带国际区号的号码
-		phoneRegex := regexp.MustCompile(`^[\d\s\-\(\)\+]{7,20}$`)
-		if !phoneRegex.MatchString(supplier.Phone) {
-			errors["phone"] = "电话格式不正确"
-		}
+	if supplier.Phone != "" && !rePhone.MatchString(supplier.Phone) {
+		errors["phone"] = "电话格式不正确"
 	}
 
-	// 验证邮箱格式
-	if supplier.Email != "" {
-		emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
-		if !emailRegex.MatchString(supplier.Email) {
-			errors["email"] = "邮箱格式不正确"
-		}
+	if supplier.Email != "" && !reEmail.MatchString(supplier.Email) {
+		errors["email"] = "邮箱格式不正确"
 	}
 
-	// 状态值验证 - 允许中文状态值
 	if supplier.Status != "" {
 		validStatuses := map[string]bool{
 			"active": true, "inactive": true,
@@ -434,17 +427,18 @@ func GetSuppliers(c *gin.Context) {
 		query = query.Where("status = ?", status)
 	}
 
-		// 运输方式筛选（支持逗号分隔的多选匹配，任一匹配即返回）
-		if transportType != "" {
-			types := strings.Split(transportType, ",")
-			conditions := make([]string, 0, len(types))
-			args := make([]interface{}, 0, len(types))
-			for _, t := range types {
-				conditions = append(conditions, "transport_type LIKE ?")
-				args = append(args, "%"+strings.TrimSpace(t)+"%")
-			}
-			query = query.Where(strings.Join(conditions, " OR "), args...)
+	// 运输方式筛选（支持逗号分隔的多选匹配，任一匹配即返回）
+	if transportType != "" {
+		types := strings.Split(transportType, ",")
+		conditions := make([]string, 0, len(types))
+		args := make([]interface{}, 0, len(types))
+		for _, t := range types {
+			t = strings.TrimSpace(t)
+			conditions = append(conditions, "transport_type LIKE ?")
+			args = append(args, "%"+escapeLike(t)+"%")
 		}
+		query = query.Where(strings.Join(conditions, " OR "), args...)
+	}
 
 	query.Count(&total)
 	query.Offset((page - 1) * pageSize).Limit(pageSize).Order("created_at DESC").Find(&suppliers)

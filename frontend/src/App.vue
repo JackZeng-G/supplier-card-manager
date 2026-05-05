@@ -78,7 +78,7 @@ const navigate = (path) => {
     <!-- 底部 -->
     <footer class="glass-footer">
       <div class="footer-line"></div>
-      <span class="footer-text">© 2026 Supplier Card Management System · by JackZeng</span>
+      <span class="footer-text">© 2026 Supplier Card Manager · by JackZeng</span>
     </footer>
   </div>
 </template>

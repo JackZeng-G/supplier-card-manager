@@ -2,7 +2,7 @@ package models
 
 import (
 	"log"
-	"supplier-card-system/config"
+	"supplier-card-manager/config"
 	"time"
 
 	"github.com/glebarez/sqlite"

@@ -11,9 +11,9 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"supplier-card-system/config"
-	"supplier-card-system/models"
-	"supplier-card-system/services"
+	"supplier-card-manager/config"
+	"supplier-card-manager/models"
+	"supplier-card-manager/services"
 	"time"
 	"unicode/utf8"
 

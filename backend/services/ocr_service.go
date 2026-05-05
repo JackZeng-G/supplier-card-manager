@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-	"supplier-card-system/config"
+	"supplier-card-manager/config"
 
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"

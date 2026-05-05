@@ -1,4 +1,4 @@
-module supplier-card-system
+module supplier-card-manager
 
 go 1.24.0
 

@@ -74,9 +74,7 @@ func main() {
 	r.Use(middleware.GzipMiddleware())
 
 	// 静态文件服务（带路径安全验证）
-	log.Printf("临时上传目录: %s", config.AppConfig.TempUploadPath)
 	r.GET("/uploads/*filepath", secureFileServer(config.AppConfig.TempUploadPath))
-	log.Printf("永久图片目录: %s", config.AppConfig.ImagePath)
 	r.GET("/images/*filepath", secureFileServer(config.AppConfig.ImagePath))
 
 	// API路由

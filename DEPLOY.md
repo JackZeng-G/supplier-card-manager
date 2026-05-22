@@ -65,13 +65,13 @@ docker-compose up -d --build
 # 进入容器
 docker-compose exec app sh
 
-# 备份数据库
-docker run --rm -v supplier-card-manager_app-data:/app/data -v $(pwd):/backup alpine tar czf /backup/supplier-data-backup.tar.gz /app/data
+# 备份数据
+tar czf supplier-data-backup.tar.gz ./data
 ```
 
 ## 数据持久化
 
-Docker volume `app-data` 挂载到容器内 `/app/data`，包含：
+使用 bind mount `./data` 挂载到容器内 `/app/data`，包含：
 - SQLite 数据库
 - 临时上传文件
 - 永久图片存储
@@ -121,10 +121,7 @@ sudo certbot --nginx -d your-domain.com
 ```bash
 #!/bin/bash
 DATE=$(date +%Y%m%d_%H%M%S)
-docker run --rm \
-  -v supplier-card-manager_app-data:/app/data \
-  -v /backup:/backup \
-  alpine tar czf /backup/supplier-$DATE.tar.gz /app/data
+tar czf /backup/supplier-$DATE.tar.gz ./data
 ```
 
 ## 故障排查

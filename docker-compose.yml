@@ -14,8 +14,8 @@ services:
       - DATABASE_PATH=/app/data/suppliers.db
       - TEMP_UPLOAD_PATH=/app/data/uploads
       - IMAGE_PATH=/app/data/images
-      - TENCENT_SECRET_ID=？
-      - TENCENT_SECRET_KEY=？
+      - TENCENT_SECRET_ID=${TENCENT_SECRET_ID}
+      - TENCENT_SECRET_KEY=${TENCENT_SECRET_KEY}
     deploy:
       resources:
         limits:

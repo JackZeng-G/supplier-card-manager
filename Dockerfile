@@ -9,7 +9,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositorie
 
 WORKDIR /app
 
-# 复制预编译的二进制文件（从 dist/ 目录）
+# 复制预编译的二进制文件
 COPY build/supplier-card-manager ./main
 RUN chmod +x ./main
 

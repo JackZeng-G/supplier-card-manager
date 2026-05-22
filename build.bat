@@ -1,8 +1,8 @@
 @echo off
-REM 构建脚本 - Windows
+REM 构建脚本 - Windows（从项目根目录执行）
 
 echo ==================================
-echo   构建供应商管理系统
+echo   构建供应商名片管理系统
 echo ==================================
 echo.
 
@@ -13,8 +13,8 @@ call npm install
 call npm run build
 cd ..
 
-REM 2. 移动前端构建产物到后端
-echo [2/3] 移动前端文件到后端...
+REM 2. 移动前端构建产物到后端（go:embed 需要）
+echo [2/3] 复制前端产物到后端...
 if not exist "backend\frontend" mkdir backend\frontend
 xcopy /E /I /Y "frontend\dist" "backend\frontend\dist"
 

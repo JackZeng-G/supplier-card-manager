@@ -64,9 +64,17 @@ func main() {
 		log.Fatalf("初始化数据库失败: %v", err)
 	}
 
-	// 创建Gin引擎（Release模式关闭debug日志）
+	// 创建Gin引擎（Release模式，自定义日志：正常静默，异常记录）
 	gin.SetMode(gin.ReleaseMode)
-	r := gin.Default()
+	r := gin.New()
+	r.Use(gin.Recovery())
+	// 自定义日志中间件：仅记录异常请求
+	r.Use(func(c *gin.Context) {
+		c.Next()
+		if len(c.Errors) > 0 || c.Writer.Status() >= 400 {
+			log.Printf("[GIN] %s %s %d %s", c.ClientIP(), c.Request.Method, c.Writer.Status(), c.Request.URL.Path)
+		}
+	})
 
 	// 使用CORS中间件
 	r.Use(middleware.CORS())

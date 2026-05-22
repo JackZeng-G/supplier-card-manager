@@ -20,7 +20,7 @@ RUN mkdir -p /app/data/uploads /app/data/images /app/data && \
 USER appuser
 EXPOSE 8080
 
-HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=10s \
+HEALTHCHECK --interval=5m --timeout=10s --retries=3 --start-period=30s \
     CMD wget -qO- http://localhost:8080/health > /dev/null 2>&1 || exit 1
 
 CMD ["./main"]

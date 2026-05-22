@@ -64,7 +64,8 @@ func main() {
 		log.Fatalf("初始化数据库失败: %v", err)
 	}
 
-	// 创建Gin引擎
+	// 创建Gin引擎（Release模式关闭debug日志）
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
 	// 使用CORS中间件

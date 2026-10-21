@@ -64,8 +64,8 @@ go run main.go
 **前端启动**
 ```bash
 cd frontend
-npm install
-npm run dev
+pnpm install --frozen-lockfile
+pnpm run dev
 ```
 
 ---

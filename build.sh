@@ -5,8 +5,8 @@ set -e
 
 echo "[1/3] 前端..."
 cd frontend
-npm install
-npm run build
+pnpm install --frozen-lockfile
+pnpm run build
 cd ..
 
 echo "[2/3] 复制..."

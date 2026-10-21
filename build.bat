@@ -2,8 +2,8 @@
 
 echo [1/3] 前端...
 cd frontend
-call npm install >nul 2>&1
-call npm run build
+call pnpm install --frozen-lockfile >nul 2>&1
+call pnpm run build
 cd ..
 
 echo [2/3] 复制...
